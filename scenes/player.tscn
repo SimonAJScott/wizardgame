@@ -1,46 +1,10 @@
 [gd_scene format=3 uid="uid://dbmdeikb5ir7c"]
 
-[ext_resource type="Texture2D" uid="uid://dii0iui4wik72" path="res://graphics/player/ElfEnchanter.png" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://dgut8jk34exvc" path="res://scenes/player.gd" id="1_g2els"]
+[ext_resource type="Texture2D" uid="uid://bdhnham0n0xra" path="res://graphics/player/16x16 Rotate-Sheet.png" id="2_g2els"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hoeal"]
 size = Vector2(8, 8)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_g2els"]
-atlas = ExtResource("1_3vyb7")
-region = Rect2(0, 0, 16, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_qhqgy"]
-atlas = ExtResource("1_3vyb7")
-region = Rect2(48, 0, 16, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_dqkch"]
-atlas = ExtResource("1_3vyb7")
-region = Rect2(16, 0, 16, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_qlg0r"]
-atlas = ExtResource("1_3vyb7")
-region = Rect2(32, 0, 16, 16)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_hoeal"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_g2els")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qhqgy")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_dqkch")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qlg0r")
-}],
-"loop": 1,
-"name": &"idle",
-"speed": 4.0
-}]
 
 [node name="Player" type="CharacterBody2D" unique_id=1901579753]
 collision_layer = 2
@@ -77,8 +41,32 @@ target_position = Vector2(-8, 0)
 collision_mask = 269
 hit_from_inside = true
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=445376511]
-sprite_frames = SubResource("SpriteFrames_hoeal")
-animation = &"idle"
-frame = 2
-frame_progress = 0.8132838
+[node name="up_left" type="RayCast2D" parent="." unique_id=1797314159]
+position = Vector2(-16, -16)
+target_position = Vector2(0, 0)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="down_left" type="RayCast2D" parent="." unique_id=354389788]
+position = Vector2(-16, 16)
+target_position = Vector2(0, 0)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="down_right" type="RayCast2D" parent="." unique_id=473798633]
+position = Vector2(16, 16)
+target_position = Vector2(0, 0)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="up_right" type="RayCast2D" parent="." unique_id=1914183771]
+position = Vector2(16, -16)
+target_position = Vector2(0, 0)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="CharacterSprite2D" type="Sprite2D" parent="." unique_id=1658234806]
+position = Vector2(0, -4)
+texture = ExtResource("2_g2els")
+hframes = 8
+frame = 3

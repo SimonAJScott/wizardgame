@@ -53,4 +53,4 @@ shape = SubResource("RectangleShape2D_hoeal")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=654960898]
 sprite_frames = SubResource("SpriteFrames_7xaro")
 animation = &"idle_down"
-frame_progress = 0.8935069
+frame_progress = 0.35912165

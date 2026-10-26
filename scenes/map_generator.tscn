@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://2veclky7uip5"]
+
+[ext_resource type="Script" uid="uid://dwnwc6kp0q55s" path="res://scenes/map_generator.gd" id="1_qw5ad"]
+
+[node name="MapGenerator" type="Node2D" unique_id=1279857333]
+script = ExtResource("1_qw5ad")

@@ -1,35 +1,36 @@
 extends CharacterBody2D
+@onready var tiles: TileMapLayer = $"../TileMapLayer"
+var is_player_turn = true
+const tile_size: Vector2 = Vector2(16,16)
 
-const TILE_SIZE: int = 16
-const MOVE_SPEED: float = 0.75
-
-var is_moving: bool = false
-var target_position: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
-	position = position.snapped(Vector2(TILE_SIZE,TILE_SIZE))
-	target_position = position
+	TurnManager.enemy_action_done.connect(on_enemy_action_done)
 	$AnimatedSprite2D.play("idle")
 	
 func _physics_process(_delta: float) -> void:
-	if is_moving:
-		position = position.move_toward(target_position,MOVE_SPEED)
-		if position == target_position:
-			is_moving = false
-	else:
-		var direction := Vector2.ZERO
-		if Input.is_action_pressed("ui_right"):
-			direction = Vector2.RIGHT
-		elif Input.is_action_pressed("ui_left"):
-			direction = Vector2.LEFT
-		elif Input.is_action_pressed("ui_down"):
-			direction = Vector2.DOWN
-		elif Input.is_action_pressed("ui_up"):
-			direction = Vector2.UP
+	if(is_player_turn):
+		if Input.is_action_just_pressed("left") && !$left.is_colliding():
+			global_position += Vector2.LEFT * tile_size
+			is_player_turn = false
+			TurnManager.player_action_done.emit()
+				
+		elif Input.is_action_just_pressed("right") && !$right.is_colliding():
+			global_position += Vector2.RIGHT * tile_size
+			is_player_turn = false
+			TurnManager.player_action_done.emit()
 			
-		if direction != Vector2.ZERO:
-			target_position = position + (direction * TILE_SIZE)
-			is_moving = true
-
-	
+				
+		elif Input.is_action_just_pressed("up") && !$up.is_colliding():
+			global_position += Vector2.UP * tile_size
+			is_player_turn = false
+			TurnManager.player_action_done.emit()
+				
+		elif Input.is_action_just_pressed("down") && !$down.is_colliding():
+			global_position += Vector2.DOWN * tile_size
+			is_player_turn = false
+			TurnManager.player_action_done.emit()
+			
+func on_enemy_action_done() -> void:
+	is_player_turn = true
 	

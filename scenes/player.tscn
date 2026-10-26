@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://dgut8jk34exvc" path="res://scenes/player.gd" id="1_g2els"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hoeal"]
-size = Vector2(16, 16)
+size = Vector2(8, 8)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_g2els"]
 atlas = ExtResource("1_3vyb7")
@@ -43,6 +43,8 @@ animations = [{
 }]
 
 [node name="Player" type="CharacterBody2D" unique_id=1901579753]
+collision_layer = 2
+collision_mask = 13
 script = ExtResource("1_g2els")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1688828228]
@@ -50,6 +52,30 @@ zoom = Vector2(3, 3)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=488452219]
 shape = SubResource("RectangleShape2D_hoeal")
+
+[node name="up" type="RayCast2D" parent="." unique_id=1641485319]
+position = Vector2(0, -8)
+target_position = Vector2(0, -8)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="down" type="RayCast2D" parent="." unique_id=610274333]
+position = Vector2(0, 8)
+target_position = Vector2(0, 8)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="right" type="RayCast2D" parent="." unique_id=1936221452]
+position = Vector2(8, 0)
+target_position = Vector2(8, 0)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="left" type="RayCast2D" parent="." unique_id=1075433161]
+position = Vector2(-8, 0)
+target_position = Vector2(-8, 0)
+collision_mask = 269
+hit_from_inside = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=445376511]
 sprite_frames = SubResource("SpriteFrames_hoeal")

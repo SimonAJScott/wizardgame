@@ -11,7 +11,6 @@ const directions = [
 	Vector2(-1,1), #down left
 ]
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	var randomX = randi_range(1, 8)*(tile_size.x)-tile_size.y/2
 	var randomY = randi_range(1, 8)*(tile_size.y)-tile_size.y/2

@@ -1,48 +1,43 @@
 extends Node2D
 
 var floor: Array[Array] = []
-var floor_path: Array
-const floor_width = 4
-const floor_height = 4
-const minimum_rooms = 6
-const maximum_rooms = 9
 
 
 func _ready() -> void:
 	reset_floor()
-
-func _physics_process(delta: float) -> void:
-	if Input.is_action_just_pressed("space"):
-		reset_floor()
-		generate_path()
-		print_floor()
+	generate_path()
+	print_floor()
 
 func print_floor() -> void:
 	print("GENERATING FLOOR")
 	var header = "y/x "
-	for x in range(floor_width):
+	for x in range(Global.floor_width):
 		header += "%2d " % x
 	print(header)
-	for y in range(floor_width):
+	for y in range(Global.floor_width):
 		var row_string = "%3d " % y
-		for x in range(floor_height):
+		for x in range(Global.floor_height):
 			row_string += "[" + str(floor[x][y]) + "]"
 		print(row_string)
-	
-
 
 func generate_path() -> void:
 	#pick random starting room (S)
-	var start_room = Vector2i(randi_range(0,3),randi_range(0,3))
-	floor[start_room.x][start_room.y] = "S"
+	floor[Global.start_room_grid.x][Global.start_room_grid.y] = "S"
 	#pick random direction
 	#if legal, create room, set as new current room, reduce rooms left counter 
 	#else pick a different direction
-	var path = add_rooms(randi_range(minimum_rooms,maximum_rooms-1),start_room)
+	var path = add_rooms(randi_range(Global.minimum_rooms,Global.maximum_rooms-1),Global.start_room_grid)
 	var adjacent_rooms = find_all_open_adjacent_rooms_along_path(path)
+	
 	#pick random room to be event
 	var random_event_room = adjacent_rooms.keys().pick_random()
+	adjacent_rooms.erase(random_event_room)
 	floor[random_event_room.x][random_event_room.y] = "E"
+	
+	#pick random room to be chest
+	var random_chest_room = adjacent_rooms.keys().pick_random()
+	adjacent_rooms.erase(random_chest_room)
+	floor[random_chest_room.x][random_chest_room.y] = "T"
 	
 func add_rooms(rooms_left: int,current_room: Vector2i) -> Array:
 	var current_path: Array = []
@@ -78,7 +73,7 @@ func add_rooms(rooms_left: int,current_room: Vector2i) -> Array:
 			floor[next_room.x][next_room.y] = "X"
 		else:
 			#change to P later
-			floor[next_room.x][next_room.y] = str(rooms_left)
+			floor[next_room.x][next_room.y] = "P"
 		rooms_left -= 1
 	return current_path
 	
@@ -107,10 +102,10 @@ func check_all_four_directions(room:Vector2i) -> Array:
 	for direction in directions:
 		var candidate: Vector2i = room + direction
 
-		if candidate.x < 0 or candidate.x >= floor_width:
+		if candidate.x < 0 or candidate.x >= Global.floor_width:
 			continue
 
-		if candidate.y < 0 or candidate.y >= floor_height:
+		if candidate.y < 0 or candidate.y >= Global.floor_height:
 			continue
 
 		if floor[candidate.x][candidate.y] == "0":
@@ -118,9 +113,18 @@ func check_all_four_directions(room:Vector2i) -> Array:
 	return available_rooms
 
 func reset_floor() -> void:
-	floor.resize(floor_width)
-	for x in range(floor_width):
+	floor.resize(Global.floor_width)
+	for x in range(Global.floor_width):
 		floor[x] = []
-		floor[x].resize(floor_height)
-		for y in range(floor_height):
+		floor[x].resize(Global.floor_height)
+		for y in range(Global.floor_height):
 			floor[x][y] = "0"
+
+func get_floor() -> Array:
+	return floor
+
+func get_floor_width() -> int:
+	return Global.floor_width
+
+func get_floor_height() -> int:
+	return Global.floor_height

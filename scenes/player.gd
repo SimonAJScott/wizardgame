@@ -1,5 +1,4 @@
 extends CharacterBody2D
-@onready var tiles: TileMapLayer = $"../TileMapLayer"
 var is_player_turn = true
 
 var current_mana: int
@@ -10,6 +9,7 @@ var max_health: int = 100
 #make spell
 
 func _ready() -> void:
+	position = Global.get_pixel_from_grid(Vector2i(36,35))
 	TurnManager.enemy_action_done.connect(on_enemy_action_done)
 	current_mana = max_mana
 	current_health = max_health
@@ -17,8 +17,7 @@ func _ready() -> void:
 	update_mana_ui()
 	add_to_group("player")
 
-func on_enemy_action_done() -> void:
-	is_player_turn = true
+
 	
 func _physics_process(_delta: float) -> void:
 	look_and_move()
@@ -79,6 +78,9 @@ func look_and_move() -> void:
 					done_with_turn()
 	else:
 		look_down()
+
+func on_enemy_action_done() -> void:
+	is_player_turn = true
 
 func done_with_turn():
 	is_player_turn = false

@@ -1,4 +1,7 @@
 extends CharacterBody2D
+
+# var game: PackedScene = preload("res://scenes/game.tscn")
+
 const directions = [
 	Vector2(0,1), #down
 	Vector2(1,1), #down right
@@ -13,9 +16,13 @@ const directions = [
 
 var max_health: int
 var current_health: int
+var collisions = {}
+
+func setup(collision_tiles: Dictionary) -> CharacterBody2D:
+	collisions = collision_tiles
+	return self
 
 func _ready() -> void:
-	position = Global.get_pixel_from_grid(Vector2i(randi_range(0, 15),randi_range(0, 15)))
 	$AnimatedSprite2D.play("idle_down")
 	TurnManager.player_action_done.connect(on_player_action_done)
 	max_health = 100
@@ -38,14 +45,18 @@ func action_move_towards_player() -> void:
 
 #find all collisions to player
 
-
 func find_path_towards_player() -> Array[Vector2i]:
-	var astargrid = AStarGrid2D.new()
-	astargrid.size = Vector2i(32,32)
+	var astargrid = AStarGrid2D.new() 
+	astargrid.size = Vector2i(72,72)
 	astargrid.cell_size = Vector2i(16,16)
 	astargrid.update()
+	for cell in collisions:
+		#print(cell)
+		astargrid.set_point_solid(cell, true)
+	
 	var path = astargrid.get_id_path(Global.get_grid_from_pixel(Vector2i(position.x,position.y)),find_player_location())
-	print(path)
+	
+	#print(path)
 	return path
 
 func find_player_location() -> Vector2i:
@@ -55,9 +66,3 @@ func find_player_location() -> Vector2i:
 		if entity.name == "Player":
 			return_vector = Global.get_grid_from_pixel(Vector2i(entity.position.x,entity.position.y))
 	return return_vector
-	
-	
-#func find_all_collisions() -> Array[Vector2i]:
-	#var collisions = []
-	#
-	#return path

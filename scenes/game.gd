@@ -7,13 +7,7 @@ var enemy_scene: PackedScene = preload("res://scenes/enemy.tscn")
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	var player = player_scene.instantiate() as CharacterBody2D
-	player.position = Vector2(8,8)
+	player.position = Global.get_pixel_from_grid(Vector2i(0,0))
 	add_child(player)
 	var test_enemy = enemy_scene.instantiate() as CharacterBody2D
 	add_child(test_enemy)
-
-func enemy_turn():
-	pass
-
-func player_turn():
-	pass

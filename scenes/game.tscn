@@ -1,7 +1,17 @@
 [gd_scene format=3 uid="uid://dfeyaug2ff7lt"]
 
-[ext_resource type="Script" uid="uid://lphcxtbnjmd3" path="res://scenes/game.gd" id="1_lbhrr"]
+[ext_resource type="Script" uid="uid://lphcxtbnjmd3" path="res://scripts/game.gd" id="1_lbhrr"]
+[ext_resource type="Script" uid="uid://cidfyip8voxki" path="res://scenes/num_enemies_left.gd" id="2_yqjtg"]
 
 [node name="Game" type="Node2D" unique_id=1745947702]
 y_sort_enabled = true
 script = ExtResource("1_lbhrr")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1385669386]
+
+[node name="num enemies left" type="Label" parent="CanvasLayer" unique_id=891177839]
+offset_right = 67.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 36
+text = "test"
+script = ExtResource("2_yqjtg")

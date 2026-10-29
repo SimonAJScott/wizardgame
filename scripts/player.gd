@@ -1,0 +1,131 @@
+extends CharacterBody2D
+var is_player_turn = true
+
+var incenerate_spell_scene: PackedScene = preload("res://scenes/spells/incinerate.tscn")
+
+var current_mana: int
+var current_health: int
+var max_mana: int = 100
+var max_health: int = 100
+var is_spell_active: bool = false
+var active_spell:Node2D = null
+var looking_dir:Vector2 = Vector2.DOWN
+
+@onready var rays := {
+	Vector2(0, 1): $down,
+	Vector2(1, 1): $down_right,
+	Vector2(1, 0): $right,
+	Vector2(1, -1): $up_right,
+	Vector2(0, -1): $up,
+	Vector2(-1, -1): $up_left,
+	Vector2(-1, 0): $left,
+	Vector2(-1, 1): $down_left,
+}
+
+@onready var look_funcs := {
+	Vector2(0, 1): look_down,
+	Vector2(1, 1): look_down_right,
+	Vector2(1, 0): look_right,
+	Vector2(1, -1): look_up_right,
+	Vector2(0, -1): look_up,
+	Vector2(-1, -1): look_up_left,
+	Vector2(-1, 0): look_left,
+	Vector2(-1, 1): look_down_left,
+}
+
+#make spell
+
+func _ready() -> void:
+	position = Global.get_pixel_from_grid(Global.player_spawn_tile)
+	TurnManager.enemy_action_done.connect(on_enemy_action_done)
+	current_mana = max_mana
+	current_health = max_health
+	update_health_ui()
+	update_mana_ui()
+	add_to_group("player")
+	look_down()
+
+func _physics_process(delta: float) -> void:
+	look_and_move()
+
+func damage_dealt(amount: int) -> void:
+	current_health -= amount
+	update_health_ui()
+
+func look_and_move() -> void:
+	if not is_player_turn:
+		return
+	if Input.is_action_just_pressed("spell_1"):
+				toggle_spell_aim()
+	
+	if Input.is_action_just_pressed("space") and not rays[looking_dir].is_colliding() and !is_spell_active:
+		global_position += looking_dir * Global.tile_size
+		done_with_turn()
+	
+	if Input.is_action_just_pressed("space") and is_spell_active:
+		cast_spell()
+		done_with_turn()
+	
+	var input_dir := Vector2(
+		int(sign(Input.get_axis("left", "right"))),
+		int(sign(Input.get_axis("up", "down")))
+	)
+	if input_dir == Vector2.ZERO:
+		return
+
+	if input_dir != looking_dir:
+		looking_dir = input_dir
+		print(looking_dir)
+		look_funcs[looking_dir].call()
+		if is_spell_active:
+				if is_instance_valid(active_spell):
+					toggle_spell_aim()
+					toggle_spell_aim()
+	else:
+		return
+
+func toggle_spell_aim() -> void:
+	if not is_spell_active:
+		active_spell = incenerate_spell_scene.instantiate() as Node2D
+		add_child(active_spell) 
+		active_spell.setup(looking_dir,true,Global.get_grid_from_pixel(position))
+		is_spell_active = true
+	else:
+		if is_instance_valid(active_spell):
+			active_spell.queue_free()
+			active_spell = null
+			is_spell_active = false
+
+func cast_spell() -> void:
+	if is_instance_valid(active_spell):
+			active_spell.queue_free()
+			active_spell = null
+	active_spell = incenerate_spell_scene.instantiate() as Node2D
+	add_child(active_spell) 
+	active_spell.setup(looking_dir,false,Global.get_grid_from_pixel(position))
+	await get_tree().create_timer(0.5).timeout
+	toggle_spell_aim()
+
+func on_enemy_action_done() -> void:
+	is_player_turn = true
+
+func done_with_turn():
+	is_player_turn = false
+	TurnManager.player_action_done.emit()
+
+func look_down(): $CharacterSprite2D.frame = 0
+func look_down_right(): $CharacterSprite2D.frame = 1
+func look_right(): $CharacterSprite2D.frame = 2
+func look_up_right(): $CharacterSprite2D.frame = 3
+func look_up(): $CharacterSprite2D.frame = 4
+func look_up_left(): $CharacterSprite2D.frame = 5
+func look_left(): $CharacterSprite2D.frame = 6
+func look_down_left(): $CharacterSprite2D.frame = 7
+
+func update_health_ui() -> void:
+	$HealthBar.value = current_health
+	$HealthBar.max_value = max_health
+
+func update_mana_ui() -> void:
+	$ManaBar.value = current_mana
+	$ManaBar.max_value = max_mana

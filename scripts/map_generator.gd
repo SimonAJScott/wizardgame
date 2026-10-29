@@ -22,11 +22,11 @@ func print_floor() -> void:
 
 func generate_path() -> void:
 	#pick random starting room (S)
-	floor[Global.start_room_grid.x][Global.start_room_grid.y] = "S"
+	floor[Global.start_room_location.x][Global.start_room_location.y] = "S"
 	#pick random direction
 	#if legal, create room, set as new current room, reduce rooms left counter 
 	#else pick a different direction
-	var path = add_rooms(randi_range(Global.minimum_rooms,Global.maximum_rooms-1),Global.start_room_grid)
+	var path = add_rooms(randi_range(Global.minimum_rooms,Global.maximum_rooms-1),Global.start_room_location)
 	var adjacent_rooms = find_all_open_adjacent_rooms_along_path(path)
 	
 	#pick random room to be event
@@ -122,9 +122,3 @@ func reset_floor() -> void:
 
 func get_floor() -> Array:
 	return floor
-
-func get_floor_width() -> int:
-	return Global.floor_width
-
-func get_floor_height() -> int:
-	return Global.floor_height

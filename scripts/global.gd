@@ -6,8 +6,9 @@ const floor_width = 9
 const floor_height = 9
 const minimum_rooms = 6
 const maximum_rooms = 9
-const start_room_grid = Vector2i(4,4)
+const start_room_location = Vector2i(4,4)
 var current_num_enemies = 10
+const player_spawn_tile = Vector2i(36,35)
 
 func get_grid_from_pixel(pixel_vector: Vector2i) -> Vector2i:
 	var grid_int_x: int = (pixel_vector.x-Global.tile_size.x/2)/Global.tile_size.x
@@ -24,3 +25,14 @@ func tile_get_pixel_from_grid(grid_vector: Vector2i) -> Vector2i:
 	var pixel_int_y: int = grid_vector.y*Global.tile_size.y*tiles_in_room
 	return Vector2i(pixel_int_x,pixel_int_y)
 	
+func get_floor_location_from_grid(grid_vector: Vector2i) -> Vector2i:
+	var floor_location_x: int = ((grid_vector.x / tiles_in_room) * tiles_in_room)/tiles_in_room
+	var floor_location_y: int = ((grid_vector.y / tiles_in_room) * tiles_in_room)/tiles_in_room
+	return Vector2i(floor_location_x,floor_location_y)
+	
+func get_all_tiles_in_radius(start:Vector2i,radius:int) -> Dictionary:
+	var radius_tiles:Dictionary = {}
+	for x in range(start.x-radius,start.x+radius):
+		for y in range(start.y-radius,start.y+radius):
+			radius_tiles.set(Vector2i(x,y),null)
+	return radius_tiles

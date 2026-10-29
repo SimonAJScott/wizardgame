@@ -1,26 +1,26 @@
 [gd_scene format=3 uid="uid://c8vnn0sec7qdv"]
 
-[ext_resource type="Texture2D" uid="uid://3nld8dxpnelj" path="res://graphics/entities/Slime 01.png" id="1_7p1mj"]
-[ext_resource type="Script" uid="uid://d0io0jodiigc5" path="res://scenes/enemy.gd" id="1_md0e3"]
-[ext_resource type="Texture2D" uid="uid://blrkqv8kbd0nf" path="res://graphics/bars/HealthBar3Effect.png" id="3_4ra3w"]
+[ext_resource type="Script" uid="uid://d0io0jodiigc5" path="res://scripts/enemy.gd" id="1_c4mo8"]
+[ext_resource type="Texture2D" uid="uid://3nld8dxpnelj" path="res://graphics/entities/Slime 01.png" id="2_75ntm"]
+[ext_resource type="Texture2D" uid="uid://blrkqv8kbd0nf" path="res://graphics/bars/HealthBar3Effect.png" id="3_epvg0"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hoeal"]
 size = Vector2(16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_md0e3"]
-atlas = ExtResource("1_7p1mj")
+atlas = ExtResource("2_75ntm")
 region = Rect2(0, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4ra3w"]
-atlas = ExtResource("1_7p1mj")
+atlas = ExtResource("2_75ntm")
 region = Rect2(16, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_5uy6h"]
-atlas = ExtResource("1_7p1mj")
+atlas = ExtResource("2_75ntm")
 region = Rect2(32, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_c4w8v"]
-atlas = ExtResource("1_7p1mj")
+atlas = ExtResource("2_75ntm")
 region = Rect2(48, 0, 16, 16)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_7xaro"]
@@ -41,12 +41,17 @@ animations = [{
 "loop": 1,
 "name": &"idle_down",
 "speed": 5.0
+}, {
+"frames": [],
+"loop": 1,
+"name": &"new_animation",
+"speed": 5.0
 }]
 
 [node name="Enemy" type="CharacterBody2D" unique_id=971082991 groups=["entities"]]
 collision_layer = 8
 collision_mask = 7
-script = ExtResource("1_md0e3")
+script = ExtResource("1_c4mo8")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2101284341]
 shape = SubResource("RectangleShape2D_hoeal")
@@ -54,7 +59,6 @@ shape = SubResource("RectangleShape2D_hoeal")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=654960898]
 sprite_frames = SubResource("SpriteFrames_7xaro")
 animation = &"idle_down"
-frame_progress = 0.35912165
 
 [node name="HealthBar" type="TextureProgressBar" parent="." unique_id=1699903997]
 offset_left = -14.0
@@ -62,6 +66,6 @@ offset_top = -13.0
 offset_right = 14.0
 offset_bottom = -9.0
 nine_patch_stretch = true
-texture_under = ExtResource("3_4ra3w")
-texture_progress = ExtResource("3_4ra3w")
+texture_under = ExtResource("3_epvg0")
+texture_progress = ExtResource("3_epvg0")
 tint_progress = Color(1, 0, 0, 1)

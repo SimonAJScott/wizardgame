@@ -1,0 +1,93 @@
+[gd_scene format=3 uid="uid://dbmdeikb5ir7c"]
+
+[ext_resource type="Script" uid="uid://dgut8jk34exvc" path="res://scripts/player.gd" id="1_g2els"]
+[ext_resource type="Texture2D" uid="uid://bdhnham0n0xra" path="res://graphics/player/16x16 Rotate-Sheet.png" id="2_g2els"]
+[ext_resource type="Texture2D" uid="uid://blrkqv8kbd0nf" path="res://graphics/bars/HealthBar3Effect.png" id="4_tuyoq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hoeal"]
+size = Vector2(8, 8)
+
+[node name="Player" type="CharacterBody2D" unique_id=1901579753 groups=["entities"]]
+collision_layer = 2
+collision_mask = 13
+script = ExtResource("1_g2els")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1688828228]
+zoom = Vector2(2, 2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=488452219]
+shape = SubResource("RectangleShape2D_hoeal")
+
+[node name="up" type="RayCast2D" parent="." unique_id=1641485319]
+position = Vector2(0, -16)
+target_position = Vector2(0, 0)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="down" type="RayCast2D" parent="." unique_id=610274333]
+position = Vector2(0, 16)
+target_position = Vector2(0, 0)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="right" type="RayCast2D" parent="." unique_id=1936221452]
+position = Vector2(16, 0)
+target_position = Vector2(0, 0)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="left" type="RayCast2D" parent="." unique_id=1075433161]
+position = Vector2(-16, 0)
+target_position = Vector2(0, 0)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="up_left" type="RayCast2D" parent="." unique_id=1797314159]
+position = Vector2(-16, -16)
+target_position = Vector2(0, 0)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="down_left" type="RayCast2D" parent="." unique_id=354389788]
+position = Vector2(-16, 16)
+target_position = Vector2(0, 0)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="down_right" type="RayCast2D" parent="." unique_id=473798633]
+position = Vector2(16, 16)
+target_position = Vector2(0, 0)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="up_right" type="RayCast2D" parent="." unique_id=1914183771]
+position = Vector2(16, -16)
+target_position = Vector2(0, 0)
+collision_mask = 269
+hit_from_inside = true
+
+[node name="CharacterSprite2D" type="Sprite2D" parent="." unique_id=1658234806]
+position = Vector2(0, -4)
+texture = ExtResource("2_g2els")
+hframes = 8
+frame = 3
+
+[node name="HealthBar" type="TextureProgressBar" parent="." unique_id=2022140345]
+offset_left = -14.0
+offset_top = -17.0
+offset_right = 14.0
+offset_bottom = -13.0
+nine_patch_stretch = true
+texture_under = ExtResource("4_tuyoq")
+texture_progress = ExtResource("4_tuyoq")
+tint_progress = Color(1, 0, 0, 1)
+
+[node name="ManaBar" type="TextureProgressBar" parent="." unique_id=705144951]
+offset_left = -14.0
+offset_top = -13.0
+offset_right = 14.0
+offset_bottom = -9.0
+nine_patch_stretch = true
+texture_under = ExtResource("4_tuyoq")
+texture_progress = ExtResource("4_tuyoq")
+tint_progress = Color(1, 0, 1, 1)

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dfeyaug2ff7lt"]
 
 [ext_resource type="Script" uid="uid://lphcxtbnjmd3" path="res://scripts/game.gd" id="1_lbhrr"]
-[ext_resource type="Script" uid="uid://cidfyip8voxki" path="res://scenes/num_enemies_left.gd" id="2_yqjtg"]
+[ext_resource type="Script" uid="uid://cidfyip8voxki" path="res://scripts/num_enemies_left.gd" id="2_yqjtg"]
 
 [node name="Game" type="Node2D" unique_id=1745947702]
 y_sort_enabled = true

@@ -7,8 +7,8 @@ var current_mana: int
 var current_health: int
 var max_mana: int = 100
 var max_health: int = 100
-var is_spell_active: bool = false
 var active_spell:Node2D = null
+var is_casting := false
 var looking_dir:Vector2 = Vector2.DOWN
 
 @onready var rays := {
@@ -33,8 +33,6 @@ var looking_dir:Vector2 = Vector2.DOWN
 	Vector2(-1, 1): look_down_left,
 }
 
-#make spell
-
 func _ready() -> void:
 	position = Global.get_pixel_from_grid(Global.player_spawn_tile)
 	TurnManager.enemy_action_done.connect(on_enemy_action_done)
@@ -42,69 +40,85 @@ func _ready() -> void:
 	current_health = max_health
 	update_health_ui()
 	update_mana_ui()
-	add_to_group("player")
 	look_down()
 
 func _physics_process(delta: float) -> void:
-	look_and_move()
+	process_action()
 
 func damage_dealt(amount: int) -> void:
 	current_health -= amount
 	update_health_ui()
 
-func look_and_move() -> void:
-	if not is_player_turn:
+
+func process_action() -> void:
+	if is_casting or not is_player_turn or Global.current_num_enemies == 0:
 		return
-	if Input.is_action_just_pressed("spell_1"):
-				toggle_spell_aim()
+		
 	
-	if Input.is_action_just_pressed("space") and not rays[looking_dir].is_colliding() and !is_spell_active:
+	if Input.is_action_just_pressed("spell_1"):
+		start_aim()
+	# cancel aiming
+	if Input.is_action_just_pressed("space") and active_spell != null:
+		cancel_aim()
+		return
+	if Input.is_action_just_released("spell_1") and active_spell != null:
+		cast_spell()
+		return
+
+	# Space moves one tile, but not while aiming
+	if Input.is_action_just_pressed("space") and active_spell == null \
+			and not rays[looking_dir].is_colliding():
 		global_position += looking_dir * Global.tile_size
 		done_with_turn()
-	
-	if Input.is_action_just_pressed("space") and is_spell_active:
-		cast_spell()
-		done_with_turn()
-	
+
+	# Turning works whether aiming or not
 	var input_dir := Vector2(
 		int(sign(Input.get_axis("left", "right"))),
 		int(sign(Input.get_axis("up", "down")))
 	)
-	if input_dir == Vector2.ZERO:
+	if input_dir == Vector2.ZERO or input_dir == looking_dir:
 		return
 
-	if input_dir != looking_dir:
-		looking_dir = input_dir
-		print(looking_dir)
-		look_funcs[looking_dir].call()
-		if is_spell_active:
-				if is_instance_valid(active_spell):
-					toggle_spell_aim()
-					toggle_spell_aim()
-	else:
+	looking_dir = input_dir
+	look_funcs[looking_dir].call()
+	if active_spell != null:
+		refresh_aim()
+		
+func start_aim() -> void:
+	if active_spell != null:
 		return
+	active_spell = incenerate_spell_scene.instantiate() as Node2D
+	add_child(active_spell)
+	active_spell.setup(looking_dir, true, Global.get_grid_from_pixel(position))
 
-func toggle_spell_aim() -> void:
-	if not is_spell_active:
-		active_spell = incenerate_spell_scene.instantiate() as Node2D
-		add_child(active_spell) 
-		active_spell.setup(looking_dir,true,Global.get_grid_from_pixel(position))
-		is_spell_active = true
-	else:
-		if is_instance_valid(active_spell):
-			active_spell.queue_free()
-			active_spell = null
-			is_spell_active = false
+func refresh_aim() -> void:
+	if is_instance_valid(active_spell):
+		active_spell.queue_free()
+	active_spell = null
+	start_aim()
+
+func cancel_aim() -> void:
+	if is_instance_valid(active_spell):
+		active_spell.queue_free()
+	active_spell = null
+
 
 func cast_spell() -> void:
+	is_casting = true
 	if is_instance_valid(active_spell):
-			active_spell.queue_free()
-			active_spell = null
+		active_spell.queue_free()
 	active_spell = incenerate_spell_scene.instantiate() as Node2D
-	add_child(active_spell) 
-	active_spell.setup(looking_dir,false,Global.get_grid_from_pixel(position))
+	add_child(active_spell)
+	active_spell.setup(looking_dir, false, Global.get_grid_from_pixel(position))
+	current_mana -= active_spell.mana_cost
+	update_mana_ui()
 	await get_tree().create_timer(0.5).timeout
-	toggle_spell_aim()
+
+	if is_instance_valid(active_spell):
+		active_spell.queue_free()
+	active_spell = null
+	is_casting = false
+	done_with_turn()
 
 func on_enemy_action_done() -> void:
 	is_player_turn = true
@@ -112,6 +126,15 @@ func on_enemy_action_done() -> void:
 func done_with_turn():
 	is_player_turn = false
 	TurnManager.player_action_done.emit()
+
+func update_health_ui() -> void:
+	$HealthBar.value = current_health
+	$HealthBar.max_value = max_health
+
+func update_mana_ui() -> void:
+	$ManaBar.value = current_mana
+	$ManaBar.max_value = max_mana
+
 
 func look_down(): $CharacterSprite2D.frame = 0
 func look_down_right(): $CharacterSprite2D.frame = 1
@@ -122,10 +145,55 @@ func look_up_left(): $CharacterSprite2D.frame = 5
 func look_left(): $CharacterSprite2D.frame = 6
 func look_down_left(): $CharacterSprite2D.frame = 7
 
-func update_health_ui() -> void:
-	$HealthBar.value = current_health
-	$HealthBar.max_value = max_health
 
-func update_mana_ui() -> void:
-	$ManaBar.value = current_mana
-	$ManaBar.max_value = max_mana
+#func look_and_move() -> void:
+	#if is_player_turn or Global.current_num_enemies == 0:	
+		#if Input.is_action_just_pressed("spell_1"):
+					#toggle_spell_aim()
+		#
+		#if Input.is_action_just_pressed("space") and not rays[looking_dir].is_colliding() and active_spell == null:
+			#global_position += looking_dir * Global.tile_size
+			#done_with_turn()
+		#
+		#if Input.is_action_just_pressed("space") and active_spell != null:
+			#cast_spell()
+			#done_with_turn()
+		#
+		#var input_dir := Vector2(
+			#int(sign(Input.get_axis("left", "right"))),
+			#int(sign(Input.get_axis("up", "down")))
+		#)
+		#
+		#if input_dir == Vector2.ZERO:
+			#return
+#
+		#if input_dir != looking_dir:
+			#looking_dir = input_dir
+			#look_funcs[looking_dir].call()
+			#if active_spell != null:
+					#if is_instance_valid(active_spell):
+						#toggle_spell_aim()
+						#toggle_spell_aim()
+		#else:
+			#return
+
+#func toggle_spell_aim() -> void:
+	#if active_spell == null:
+		#active_spell = incenerate_spell_scene.instantiate() as Node2D
+		#add_child(active_spell) 
+		#active_spell.setup(looking_dir,true,Global.get_grid_from_pixel(position))
+	#else:
+		#if is_instance_valid(active_spell):
+			#active_spell.queue_free()
+			#active_spell = null
+
+#func cast_spell() -> void:
+	#if is_instance_valid(active_spell):
+			#active_spell.queue_free()
+			#active_spell = null
+	#active_spell = incenerate_spell_scene.instantiate() as Node2D
+	#add_child(active_spell) 
+	#active_spell.setup(looking_dir,false,Global.get_grid_from_pixel(position))
+	#await get_tree().create_timer(0.5).timeout
+	#toggle_spell_aim()
+	

@@ -7,7 +7,7 @@ const floor_height = 9
 const minimum_rooms = 6
 const maximum_rooms = 9
 const start_room_location = Vector2i(4,4)
-var current_num_enemies = 10
+var current_num_enemies = 1
 const player_spawn_tile = Vector2i(36,35)
 
 func get_grid_from_pixel(pixel_vector: Vector2i) -> Vector2i:

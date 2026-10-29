@@ -36,3 +36,6 @@ func setup(spell_direction: Vector2, is_aim: bool,player_vector:Vector2) -> void
 				
 	if !is_aim:
 		incinerate_sound.play()
+
+func get_mana_cost() -> int:
+	return mana_cost

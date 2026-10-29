@@ -1,28 +1,6 @@
 extends CharacterBody2D
 
-const directions = [
-	Vector2(0,1), #down
-	Vector2(1,1), #down right
-	Vector2(1,0), #right
-	Vector2(-1,1), #up right
-	Vector2(-1,0), #up
-	Vector2(-1,-1), #up left
-	Vector2(-1,0), #left
-	Vector2(-1,1), #down left
-]
-
-#const attack_directions = {
-	#Vector2.UP:{Vector2i(0,-1):null,Vector2i(0,-2):null},
-	#Vector2.DOWN:{Vector2i(0,1):null,Vector2i(0,2):null},
-	#Vector2.LEFT:{Vector2i(-1,0):null,Vector2i(-2,0):null},
-	#Vector2.RIGHT:{Vector2i(1,0):null,Vector2i(2,0):null},
-	#Vector2(1, 1): {Vector2i(1,1):null,Vector2i(2,2):null},
-	#Vector2(1, -1): {Vector2i(1,-1):null,Vector2i(2,-2):null},
-	#Vector2(-1, -1): {Vector2i(-1,-1):null,Vector2i(-2,-2):null},
-	#Vector2(-1, 1): {Vector2i(-1,1):null,Vector2i(-2,2):null}
-#}
-
-const attack_tiles = {
+const attack_tiles_funcs = {
 	Vector2i(0,-1):null,Vector2i(0,-2):null,
 	Vector2i(0,1):null,Vector2i(0,2):null,
 	Vector2i(-1,0):null,Vector2i(-2,0):null,
@@ -77,7 +55,7 @@ func do_attack()-> void:
 	await get_tree().create_timer(0.5).timeout
 	
 func is_player_in_attack_range() -> bool:
-	for attack in attack_tiles:
+	for attack in attack_tiles_funcs:
 		if attack+Vector2i(current_location) == Vector2i(player_location):
 			return true
 	return false
@@ -90,7 +68,6 @@ func action_move_towards_player() -> void:
 	else:
 		position = Global.get_pixel_from_grid(path.front())
 
-
 func find_path_towards_player() -> Array[Vector2i]:
 	var astargrid = AStarGrid2D.new() 
 	astargrid.size = Vector2i(72,72)
@@ -98,6 +75,8 @@ func find_path_towards_player() -> Array[Vector2i]:
 	astargrid.update()
 	for cell in collisions:
 		astargrid.set_point_solid(cell, true)
+	for tile in get_other_entity_tiles():
+		astargrid.set_point_solid(tile, true)
 	player_location = find_player_location()
 	current_location = Global.get_grid_from_pixel(Vector2i(position.x,position.y))
 	var path = astargrid.get_id_path(current_location,player_location)
@@ -110,3 +89,11 @@ func find_player_location() -> Vector2i:
 		if entity.name == "Player":
 			return_vector = Global.get_grid_from_pixel(Vector2i(entity.position.x,entity.position.y))
 	return return_vector
+	
+func get_other_entity_tiles() -> Array[Vector2i]:
+	var tiles: Array[Vector2i] = []
+	for entity in get_tree().get_nodes_in_group("entities"):
+		if entity == self or entity.name == "Player":
+			continue
+		tiles.append(Global.get_grid_from_pixel(Vector2i(entity.position)))
+	return tiles

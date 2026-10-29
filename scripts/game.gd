@@ -24,14 +24,15 @@ func _ready() -> void:
 	var map_generator = map_generator_scene.instantiate() as Node2D
 	add_child(map_generator)
 	floor = map_generator.get_floor()
-	place_tiles(floor,Global.floor_height,Global.floor_width)
+	place_tiles(Global.floor_height,Global.floor_width)
 	#add player to map
 	var player = player_scene.instantiate() as CharacterBody2D
 	add_child(player)
-	#add test enemy
+	player.add_to_group("player")
+	#add test enemies
 	spawn_enemies_randomly()
 
-func place_tiles(floor: Array[Array], floor_height: int, floor_width: int) -> void:
+func place_tiles(floor_height: int, floor_width: int) -> void:
 	for y in range(floor_height):
 		for x in range(floor_width):
 			match floor[x][y]:
@@ -99,5 +100,6 @@ func spawn_enemies_randomly() -> void:
 			valid_spawn_tiles.erase(tile)
 
 func initialize_collisions(tile,x:int,y:int) -> void:
+	#tile: [enviornment,physics]
 	for candidate_tile in tile.get_child(1).get_used_cells():
 		collision_tiles.set(Vector2i((x*Global.tile_size.x/2)+candidate_tile.x,(y*Global.tile_size.y/2)+candidate_tile.y),null)

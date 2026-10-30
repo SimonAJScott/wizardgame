@@ -2,6 +2,7 @@ extends Node2D
 
 var mana_cost = 15
 var turn_cooldown = 1
+var current_cooldown = 0
 var damage = 25
 @onready var incinerate_sound: AudioStreamPlayer2D = $IncinerateSound
 @onready var incinerate_tile_map_layer_visual:TileMapLayer = get_node("IncinerateVisual")

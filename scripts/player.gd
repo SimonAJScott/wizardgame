@@ -10,7 +10,7 @@ var max_health: int = 100
 var active_spell:Node2D = null
 var is_casting := false
 var looking_dir:Vector2 = Vector2.DOWN
-var gold: int = 0
+var gold: int = 100
 var spell_1 = null
 var spell_2 = null
 var spell_3 = null
@@ -59,8 +59,6 @@ func _physics_process(delta: float) -> void:
 func damage_dealt(amount: int) -> void:
 	current_health -= amount
 	update_health_ui()
-	
-
 
 func process_action() -> void:
 	if is_casting:
@@ -76,14 +74,17 @@ func process_action() -> void:
 		return
 	# cast spell
 	if Input.is_action_just_released("spell_1") and active_spell != null:
-		cast_spell()
+		if spell_1.current_cooldown == 0:
+			cast_spell()
+		else:
+			cancel_aim()
 		return
 
 	# Space moves one tile, but not while aiming
 	if Input.is_action_just_pressed("space") and active_spell == null \
 			and not rays[looking_dir].is_colliding():
 		global_position += looking_dir * Global.tile_size
-		done_with_turn()
+		done_with_turn(false)
 
 	# Turning works whether aiming or not
 	var input_dir := Vector2(
@@ -101,8 +102,10 @@ func process_action() -> void:
 func start_aim() -> void:
 	if active_spell != null:
 		return
+	print('aiming')
 	active_spell = spell_1
 	active_spell.cast(looking_dir, true, Global.get_grid_from_pixel(position))
+		
 	
 
 func refresh_aim() -> void:
@@ -122,14 +125,20 @@ func cast_spell() -> void:
 	update_mana_ui()
 	await get_tree().create_timer(0.5).timeout
 	active_spell.reset()
-	active_spell = null
+	active_spell.current_cooldown = active_spell.turn_cooldown
 	is_casting = false
-	done_with_turn()
+	done_with_turn(true)
 
 func on_enemy_action_done() -> void:
 	is_player_turn = true
 
-func done_with_turn() -> void:
+func done_with_turn(did_cast: bool) -> void:
+	if did_cast:
+		active_spell.current_cooldown = active_spell.turn_cooldown
+		active_spell = null
+	elif spell_1.current_cooldown > 0:
+			print('got here')
+			spell_1.current_cooldown -= 1
 	is_player_turn = false
 	TurnManager.player_action_done.emit()
 

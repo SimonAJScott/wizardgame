@@ -51,7 +51,9 @@ func damage_dealt(amount: int) -> void:
 
 
 func process_action() -> void:
-	if is_casting or not is_player_turn or Global.current_num_enemies == 0:
+	if is_casting:
+		return
+	if Global.current_num_enemies > 0 and not is_player_turn:
 		return
 		
 	

@@ -11,6 +11,9 @@ const attack_tiles_funcs = {
 	Vector2i(-1,1):null,Vector2i(-2,2):null
 }
 
+@onready var shot_sprite: AnimatedSprite2D = $ProjectileSprite2D
+@export var shot_animation := "default"   # your projectile animation's name
+
 
 var max_health: int
 var current_health: int
@@ -25,6 +28,7 @@ func setup(collision_tiles: Dictionary) -> CharacterBody2D:
 	return self
 
 func _ready() -> void:
+	shot_sprite.visible = false
 	$AnimatedSprite2D.play("idle_down")
 	TurnManager.player_action_done.connect(on_player_action_done)
 	max_health = 100
@@ -32,7 +36,7 @@ func _ready() -> void:
 	update_health_ui()
 
 func on_player_action_done():
-	action_move_towards_player()
+	action()
 	print(name + ": enemy acted")
 	TurnManager.enemy_action_done.emit()
 
@@ -53,14 +57,14 @@ func do_attack()-> void:
 			entity.damage_dealt(damage)
 	
 	await get_tree().create_timer(0.5).timeout
-	
+
 func is_player_in_attack_range() -> bool:
 	for attack in attack_tiles_funcs:
 		if attack+Vector2i(current_location) == Vector2i(player_location):
 			return true
 	return false
 
-func action_move_towards_player() -> void:
+func action() -> void:
 	var path = find_path_towards_player()
 	path.pop_front()
 	if is_player_in_attack_range():

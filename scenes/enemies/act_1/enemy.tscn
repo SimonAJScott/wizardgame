@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://d0io0jodiigc5" path="res://scripts/enemy.gd" id="1_c4mo8"]
 [ext_resource type="Texture2D" uid="uid://3nld8dxpnelj" path="res://graphics/entities/Slime 01.png" id="2_75ntm"]
 [ext_resource type="Texture2D" uid="uid://blrkqv8kbd0nf" path="res://graphics/bars/HealthBar3Effect.png" id="3_epvg0"]
+[ext_resource type="Texture2D" uid="uid://dcnvj0xpusoo5" path="res://graphics/entities/Green Effect and Bullet 16x16.png" id="4_75ntm"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hoeal"]
 size = Vector2(16, 16)
@@ -48,6 +49,28 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_epvg0"]
+atlas = ExtResource("4_75ntm")
+region = Rect2(0, 160, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_537fs"]
+atlas = ExtResource("4_75ntm")
+region = Rect2(16, 160, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hoeal"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_epvg0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_537fs")
+}],
+"loop": 0,
+"name": &"default",
+"speed": 5.0
+}]
+
 [node name="Enemy" type="CharacterBody2D" unique_id=971082991 groups=["entities"]]
 collision_layer = 8
 collision_mask = 7
@@ -69,3 +92,8 @@ nine_patch_stretch = true
 texture_under = ExtResource("3_epvg0")
 texture_progress = ExtResource("3_epvg0")
 tint_progress = Color(1, 0, 0, 1)
+
+[node name="ProjectileSprite2D" type="AnimatedSprite2D" parent="." unique_id=2031014810]
+sprite_frames = SubResource("SpriteFrames_hoeal")
+frame = 1
+frame_progress = 0.54614663

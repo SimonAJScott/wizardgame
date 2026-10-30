@@ -11,7 +11,7 @@ var tile_map_start_scene: PackedScene = preload("res://scenes/start_rooms/tile_m
 var tile_map_exit_scene: PackedScene = preload("res://scenes/exit_rooms/tile_map_layer_exit.tscn")
 var tile_map_treasure_scene: PackedScene = preload("res://scenes/treasure_rooms/tile_map_layer_treasure.tscn")
 var tile_map_background_scene: PackedScene = preload("res://scenes/background_rooms/tile_map_layer_background.tscn")
-var num_enemies_scene: PackedScene = preload("res://scenes/num_enemies.tscn")
+var hud_scene: PackedScene = preload("res://scenes/hud.tscn")
 var background_scene_counter: int = 0
 var enemy_scene_counter: int = 0
 var collision_tiles: Dictionary = {}
@@ -35,7 +35,7 @@ func play() -> void:
 	floor = map_generator.get_floor()
 	place_tiles(Global.floor_height,Global.floor_width)
 	#add enemy counter
-	var num_enemies = num_enemies_scene.instantiate() as CanvasLayer
+	var num_enemies = hud_scene.instantiate() as CanvasLayer
 	
 	add_child(num_enemies)
 	#add player to map

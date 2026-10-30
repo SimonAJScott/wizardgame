@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b861m6xgygdij"]
 
-[ext_resource type="Script" uid="uid://dfvs8hdvio33y" path="res://scenes/deathscreen.gd" id="1_ylnw1"]
+[ext_resource type="Script" uid="uid://dfvs8hdvio33y" path="res://scripts/deathscreen.gd" id="1_ylnw1"]
 
 [node name="Deathscreen" type="CanvasLayer" unique_id=1228276698]
 script = ExtResource("1_ylnw1")

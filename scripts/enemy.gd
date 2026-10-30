@@ -24,6 +24,7 @@ var current_location:Vector2
 var damage: int = 10
 var attack_cooldown: int = 1
 var current_attack_cooldown: int = 0
+var gold = 20
 
 func setup(collision_tiles: Dictionary) -> CharacterBody2D:
 	collisions = collision_tiles
@@ -44,6 +45,7 @@ func damage_dealt(amount: int) -> void:
 	current_health -= amount
 	update_health_ui()
 	if current_health <= 0:
+		TurnManager.collect_gold.emit(gold)
 		Global.current_num_enemies -= 1
 		queue_free()
 

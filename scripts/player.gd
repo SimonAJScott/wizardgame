@@ -10,6 +10,7 @@ var max_health: int = 100
 var active_spell:Node2D = null
 var is_casting := false
 var looking_dir:Vector2 = Vector2.DOWN
+var gold: int = 0
 
 @onready var rays := {
 	Vector2(0, 1): $down,
@@ -36,6 +37,7 @@ var looking_dir:Vector2 = Vector2.DOWN
 func _ready() -> void:
 	position = Global.get_pixel_from_grid(Global.player_spawn_tile)
 	TurnManager.enemy_action_done.connect(on_enemy_action_done)
+	TurnManager.collect_gold.connect(on_collect_gold)
 	current_mana = max_mana
 	current_health = max_health
 	update_health_ui()
@@ -140,6 +142,11 @@ func update_mana_ui() -> void:
 	$ManaBar.value = current_mana
 	$ManaBar.max_value = max_mana
 
+func on_collect_gold(sent_gold: int) -> void:
+	gold += sent_gold
+
+func get_gold() -> int:
+	return gold
 
 func look_down(): $CharacterSprite2D.frame = 0
 func look_down_right(): $CharacterSprite2D.frame = 1

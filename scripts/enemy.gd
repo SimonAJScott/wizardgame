@@ -15,13 +15,15 @@ const attack_tiles_funcs = {
 @export var shot_animation := "default"   # your projectile animation's name
 
 
-var max_health: int
+var max_health: int = 20
 var current_health: int
 var collisions = {}
 var attack_range = 2
 var player_location:Vector2
 var current_location:Vector2
-var damage = 10
+var damage: int = 10
+var attack_cooldown: int = 1
+var current_attack_cooldown: int = 0
 
 func setup(collision_tiles: Dictionary) -> CharacterBody2D:
 	collisions = collision_tiles
@@ -31,13 +33,11 @@ func _ready() -> void:
 	shot_sprite.visible = false
 	$AnimatedSprite2D.play("idle_down")
 	TurnManager.player_action_done.connect(on_player_action_done)
-	max_health = 100
 	current_health = max_health
 	update_health_ui()
 
 func on_player_action_done():
 	action()
-	print(name + ": enemy acted")
 	TurnManager.enemy_action_done.emit()
 
 func damage_dealt(amount: int) -> void:
@@ -55,8 +55,8 @@ func do_attack()-> void:
 	for entity in get_tree().get_nodes_in_group("entities"):
 		if entity.name == "Player":
 			entity.damage_dealt(damage)
-	
-	await get_tree().create_timer(0.5).timeout
+	$AudioStreamPlayer2D.play()
+	#await get_tree().create_timer(0.5).timeout
 
 func is_player_in_attack_range() -> bool:
 	for attack in attack_tiles_funcs:
@@ -66,11 +66,18 @@ func is_player_in_attack_range() -> bool:
 
 func action() -> void:
 	var path = find_path_towards_player()
-	path.pop_front()
 	if is_player_in_attack_range():
-		do_attack()
+		if current_attack_cooldown == 0:
+			do_attack()
+			current_attack_cooldown = attack_cooldown
+		else:
+			current_attack_cooldown -= 1
 	else:
-		position = Global.get_pixel_from_grid(path.front())
+		if path.size() == 0 or path.size() == 1:
+			return
+		else:
+			path.pop_front()
+			position = Global.get_pixel_from_grid(path.front())
 
 func find_path_towards_player() -> Array[Vector2i]:
 	var astargrid = AStarGrid2D.new() 

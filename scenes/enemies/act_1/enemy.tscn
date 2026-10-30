@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://d0io0jodiigc5" path="res://scripts/enemy.gd" id="1_c4mo8"]
 [ext_resource type="Texture2D" uid="uid://3nld8dxpnelj" path="res://graphics/entities/Slime 01.png" id="2_75ntm"]
+[ext_resource type="AudioStream" uid="uid://bls05f1a3xixu" path="res://sounds/enemies/floraphonic-slime-splat-1-219248.mp3" id="2_epvg0"]
 [ext_resource type="Texture2D" uid="uid://blrkqv8kbd0nf" path="res://graphics/bars/HealthBar3Effect.png" id="3_epvg0"]
 [ext_resource type="Texture2D" uid="uid://dcnvj0xpusoo5" path="res://graphics/entities/Green Effect and Bullet 16x16.png" id="4_75ntm"]
 
@@ -71,10 +72,14 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Enemy" type="CharacterBody2D" unique_id=971082991 groups=["entities"]]
+[node name="Enemy" type="CharacterBody2D" unique_id=971082991]
 collision_layer = 8
 collision_mask = 7
 script = ExtResource("1_c4mo8")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=1463013850]
+stream = ExtResource("2_epvg0")
+volume_db = -11.447
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2101284341]
 shape = SubResource("RectangleShape2D_hoeal")

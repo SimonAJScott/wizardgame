@@ -11,24 +11,38 @@ var tile_map_start_scene: PackedScene = preload("res://scenes/start_rooms/tile_m
 var tile_map_exit_scene: PackedScene = preload("res://scenes/exit_rooms/tile_map_layer_exit.tscn")
 var tile_map_treasure_scene: PackedScene = preload("res://scenes/treasure_rooms/tile_map_layer_treasure.tscn")
 var tile_map_background_scene: PackedScene = preload("res://scenes/background_rooms/tile_map_layer_background.tscn")
+var num_enemies_scene: PackedScene = preload("res://scenes/num_enemies.tscn")
 var background_scene_counter: int = 0
 var enemy_scene_counter: int = 0
-var collision_tiles = {}
-var valid_spawn_tiles = {}
-var floor = []
+var collision_tiles: Dictionary = {}
+var valid_spawn_tiles: Dictionary = {}
+var floor: Array = []
 
 
 func _ready() -> void:
+	TurnManager.player_died.connect(on_player_death)
+	LevelManager.death_to_game.connect(on_show_death)
+	play()
 	
+func _physics_process(delta: float) -> void:
+	if Input.is_action_just_pressed("restart"):
+		reset_game()
+
+func play() -> void:
 	#add tiles to map
 	var map_generator = map_generator_scene.instantiate() as Node2D
 	add_child(map_generator)
 	floor = map_generator.get_floor()
 	place_tiles(Global.floor_height,Global.floor_width)
+	#add enemy counter
+	var num_enemies = num_enemies_scene.instantiate() as CanvasLayer
+	
+	add_child(num_enemies)
 	#add player to map
 	var player = player_scene.instantiate() as CharacterBody2D
 	add_child(player)
 	player.add_to_group("player")
+	player.name = "Player"
 	#add test enemies
 	spawn_enemies_randomly()
 
@@ -93,13 +107,50 @@ func spawn_enemies_randomly() -> void:
 		test_enemy.set_name("Enemy_" + str(enemy_scene_counter))
 		enemy_scene_counter+=1
 		add_child(test_enemy)
-		add_to_group("enemies")
+		test_enemy.add_to_group("enemies")
+		test_enemy.add_to_group("entities")
 		valid_spawn_tiles.erase(random_tile)
 		#remove spawn from 2 tiles of enemy
 		for tile in Global.get_all_tiles_in_radius(random_tile,2):
 			valid_spawn_tiles.erase(tile)
 
-func initialize_collisions(tile,x:int,y:int) -> void:
-	#tile: [enviornment,physics]
-	for candidate_tile in tile.get_child(1).get_used_cells():
-		collision_tiles.set(Vector2i((x*Global.tile_size.x/2)+candidate_tile.x,(y*Global.tile_size.y/2)+candidate_tile.y),null)
+func initialize_collisions(tile, x: int, y: int) -> void:
+	# tile: [environment, physics]
+	var layer := tile.get_child(1) as TileMapLayer
+	if not layer.collision_enabled:
+		return
+	for candidate_tile in layer.get_used_cells():
+		if not cell_has_physics(layer, candidate_tile):
+			continue
+		collision_tiles.set(
+			Vector2i((x * Global.tile_size.x / 2) + candidate_tile.x,
+					 (y * Global.tile_size.y / 2) + candidate_tile.y),
+			null)
+			
+func cell_has_physics(layer: TileMapLayer, cell: Vector2i) -> bool:
+	var data := layer.get_cell_tile_data(cell)
+	if data == null:
+		return false
+	for i in layer.tile_set.get_physics_layers_count():
+		if data.get_collision_polygons_count(i) > 0:
+			return true
+	return false
+
+func on_player_death() -> void:
+	if is_inside_tree():
+		get_tree().change_scene_to_file('res://scenes/deathscreen.tscn')	
+
+func reset_game() -> void:
+	for child in get_children():
+		child.queue_free()
+	background_scene_counter = 0
+	enemy_scene_counter = 0
+	collision_tiles = {}
+	valid_spawn_tiles = {}
+	floor = []
+	Global.current_num_enemies = 3 
+	await get_tree().process_frame 
+	play()
+	
+func on_show_death() -> void:
+	reset_game()

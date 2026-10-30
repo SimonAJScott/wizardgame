@@ -769,5 +769,5 @@ tile_set = SubResource("TileSet_l8opk")
 collision_enabled = false
 
 [node name="TileMapLayer_Event_Enviornment" type="TileMapLayer" parent="." unique_id=1093903998]
-tile_map_data = PackedByteArray("AAAFAAMAAAAUAAgAAAADAAMAAAAUAAgAAAAFAAYAAAAUAAgAAAADAAYAAAAUAAgAAAA=")
+tile_map_data = PackedByteArray("AAAFAAYAAAAUAAgAAAADAAYAAAAUAAgAAAAEAAYAAAAUAAgAAAADAAUAAAAUAAgAAAAFAAUAAAAUAAgAAAAFAAQAAAAUAAgAAAADAAQAAAAUAAgAAAA=")
 tile_set = SubResource("TileSet_e7l48")

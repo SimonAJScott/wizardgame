@@ -2,7 +2,7 @@ extends Node2D
 
 var mana_cost = 15
 var turn_cooldown = 1
-var damage = 50
+var damage = 25
 @onready var incinerate_sound: AudioStreamPlayer2D = $IncinerateSound
 
 var casting_directions = {

@@ -43,11 +43,15 @@ func _ready() -> void:
 	look_down()
 
 func _physics_process(delta: float) -> void:
+	if current_health <= 0:
+		TurnManager.player_died.emit()
+		queue_free()
 	process_action()
 
 func damage_dealt(amount: int) -> void:
 	current_health -= amount
 	update_health_ui()
+	
 
 
 func process_action() -> void:
@@ -104,7 +108,6 @@ func cancel_aim() -> void:
 		active_spell.queue_free()
 	active_spell = null
 
-
 func cast_spell() -> void:
 	is_casting = true
 	if is_instance_valid(active_spell):
@@ -125,7 +128,7 @@ func cast_spell() -> void:
 func on_enemy_action_done() -> void:
 	is_player_turn = true
 
-func done_with_turn():
+func done_with_turn() -> void:
 	is_player_turn = false
 	TurnManager.player_action_done.emit()
 

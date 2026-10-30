@@ -11,6 +11,10 @@ var active_spell:Node2D = null
 var is_casting := false
 var looking_dir:Vector2 = Vector2.DOWN
 var gold: int = 0
+var spell_1 = null
+var spell_2 = null
+var spell_3 = null
+var spell_4 = null
 
 @onready var rays := {
 	Vector2(0, 1): $down,
@@ -43,6 +47,8 @@ func _ready() -> void:
 	update_health_ui()
 	update_mana_ui()
 	look_down()
+	spell_1 = incenerate_spell_scene.instantiate() as Node2D
+	add_child(spell_1)
 
 func _physics_process(delta: float) -> void:
 	if current_health <= 0:
@@ -61,7 +67,6 @@ func process_action() -> void:
 		return
 	if Global.current_num_enemies > 0 and not is_player_turn:
 		return
-		
 	
 	if Input.is_action_just_pressed("spell_1"):
 		start_aim()
@@ -69,6 +74,7 @@ func process_action() -> void:
 	if Input.is_action_just_pressed("space") and active_spell != null:
 		cancel_aim()
 		return
+	# cast spell
 	if Input.is_action_just_released("spell_1") and active_spell != null:
 		cast_spell()
 		return
@@ -95,34 +101,27 @@ func process_action() -> void:
 func start_aim() -> void:
 	if active_spell != null:
 		return
-	active_spell = incenerate_spell_scene.instantiate() as Node2D
-	add_child(active_spell)
-	active_spell.setup(looking_dir, true, Global.get_grid_from_pixel(position))
+	active_spell = spell_1
+	active_spell.cast(looking_dir, true, Global.get_grid_from_pixel(position))
+	
 
 func refresh_aim() -> void:
-	if is_instance_valid(active_spell):
-		active_spell.queue_free()
+	active_spell.reset()
 	active_spell = null
 	start_aim()
 
 func cancel_aim() -> void:
-	if is_instance_valid(active_spell):
-		active_spell.queue_free()
+	active_spell.reset()
 	active_spell = null
 
 func cast_spell() -> void:
 	is_casting = true
-	if is_instance_valid(active_spell):
-		active_spell.queue_free()
-	active_spell = incenerate_spell_scene.instantiate() as Node2D
-	add_child(active_spell)
-	active_spell.setup(looking_dir, false, Global.get_grid_from_pixel(position))
+	active_spell.reset()
+	active_spell.cast(looking_dir, false, Global.get_grid_from_pixel(position))
 	current_mana -= active_spell.mana_cost
 	update_mana_ui()
 	await get_tree().create_timer(0.5).timeout
-
-	if is_instance_valid(active_spell):
-		active_spell.queue_free()
+	active_spell.reset()
 	active_spell = null
 	is_casting = false
 	done_with_turn()

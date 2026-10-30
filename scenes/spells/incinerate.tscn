@@ -381,7 +381,8 @@ texture = ExtResource("1_6js53")
 sources/0 = SubResource("TileSetAtlasSource_ox7ly")
 
 [node name="Incinerate" type="Node2D" unique_id=1398637722]
-y_sort_enabled = true
+z_index = 100
+z_as_relative = false
 script = ExtResource("1_ox7ly")
 
 [node name="IncinerateVisual" type="TileMapLayer" parent="." unique_id=1732688961]
